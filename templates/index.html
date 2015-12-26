@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ModSecurity Rule Test</title>
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script>
+        $( document ).ready(function() {
+            // Any key types into the SecRules Box
+            $( "#rule" ).keyup(function() {
+                $.post( "/ruleTest", { "rule" : $("#rule").val() }, function( data ) {
+                    var obj = jQuery.parseJSON( data );
+                    $("#valid").html( obj.X );
+                    $("#error").html( obj.R ); 
+                 
+                });
+            });
+            $("#httpForm").submit(function(e) {
+                e.preventDefault();
+                $.post( "/runRequest", { "rule" : $("#rule").val(), "request" : $("#request").val(), "response" : $("#response").val() }, function( data ) {
+                    var obj = jQuery.parseJSON( data );
+                    $("#error").html( obj.R );
+                    $("#output").html( obj.X );
+                });
+            });
+        });
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div>
+                Your SecRules Expression is: <x id="valid">Valid</x>
+                <br>
+                <div id="error"></div>
+            </div>
+            <h1>SecRule Evaluation ({{ Version }})</h1>
+            <form method="POST" id="httpForm" action='#'>
+                <table>
+                    <tr>
+                        SecRule:<br />
+                        <textarea id="rule" name="rule" rows="10" cols="50">SecRule ARGS:test "@contains test" "id:1,deny,status:404"</textarea> 
+                    </tr>
+                    <tr>
+                        <td>   
+                            HTTP Request:
+                        </td>
+                        <td>
+                            HTTP Response:
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>   
+                            <textarea id="request" rows="10" cols="50">{{ requestExample }}</textarea>
+                        </td>
+                        <td>
+                            <textarea id="response" rows="10" cols="50">{{ responseExample }}</textarea>  
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>                            
+                        </td>
+                        <td>
+                            <input type="submit" value="Send Request">   
+                        </td>
+                    </tr>
+                </table>
+            </form>
+          <br>
+            Output:<br>
+            <textarea id="output" rows="25" cols="100"></textarea>  
+        </div>
+    </body>
+</html>
