@@ -1,0 +1,11 @@
+flask
+Werkzeug
+flask-talisman
+flask_sqlalchemy
+dogpile.cache
+sqlalchemy
+scp
+paramiko
+boto3
+requests
+pycryptodome

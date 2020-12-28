@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  modsecurity:
+    build:
+      context: .
+    stdin_open: true
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+       - ./webapp:/webapp
