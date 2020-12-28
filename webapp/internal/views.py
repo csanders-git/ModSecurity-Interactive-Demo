@@ -47,13 +47,18 @@ class HttpRequest:
             self.version = self.version.upper().replace('HTTP/', '')
 
     @staticmethod
-    def list_get(search_list, index, default, till_end=False):
+    def list_get(search_list, index, default):
         if len(search_list) < index + 1:
             return default
         else:
-            if till_end:
-                return search_list[index:]
             return search_list[index]
+
+    @staticmethod
+    def list_get_remainder(search_list, index, default, combinator):
+        if len(search_list) < index + 1:
+            return default
+        else:
+            return combinator.join(search_list[index:])
 
     def process_request_line(self):
         # we are promised at least one element
@@ -61,7 +66,7 @@ class HttpRequest:
         split_req_line = re.compile(r'\s+').split(req_line)
         self.method = HttpRequest.list_get(split_req_line, 0, "")
         self.path = HttpRequest.list_get(split_req_line, 1, "")
-        self.version = HttpRequest.list_get(split_req_line, 2, "", till_end=True)
+        self.version = HttpRequest.list_get_remainder(split_req_line, 2, "", " ")
         if len(self.query) > 1:
             self.query = self.query[1:]
         else:
@@ -78,7 +83,7 @@ class HttpRequest:
                 return
             header_line = line.split(':', 1)
             header_key = header_line[0]
-            header_value = HttpRequest.list_get(header_line, 1, "", till_end=True)
+            header_value = HttpRequest.list_get(header_line, 1, "")
             found_headers[header_key] = header_value.lstrip()
         self.headers = found_headers
         self.query = []
